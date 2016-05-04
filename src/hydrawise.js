@@ -15,8 +15,7 @@ class Hydrawise {
       json: true
     };
 
-    options.qs = {...params};
-    options.qs.api_key = this.api_key;
+    options.qs = {api_key: this.api_key, ...params};
     return rp(options);
   }
 
