@@ -27,6 +27,10 @@ class Hydrawise {
   statusschedule(tag = '', hours = '168') {
     return this.request('GET', 'statusschedule', {tag, hours});
   }
+
+  setcontroller(controller_id) {
+    return this.request('GET', 'setcontroller', {controller_id, json: true});
+  }
 }
 
 export default Hydrawise;

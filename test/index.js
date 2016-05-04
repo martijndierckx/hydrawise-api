@@ -23,7 +23,15 @@ test('Status Schedule', t => {
 
 test('Status Schedule All', t => {
   return hydrawise.statusschedule('hydrawise_all').then(data => {
-    console.log(data);
+    if (data.error_msg) {
+      t.fail(`Error: ${data.error_msg}`);
+    }
+    t.pass();
+  });
+});
+
+test('Set Controller', t => {
+  return hydrawise.setcontroller('11742').then(data => {
     if (data.error_msg) {
       t.fail(`Error: ${data.error_msg}`);
     }
