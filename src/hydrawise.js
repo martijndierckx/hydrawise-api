@@ -23,6 +23,10 @@ class Hydrawise {
   customerdetails() {
     return this.request('GET', 'customerdetails', {type: 'controllers'});
   }
+
+  statusschedule(tag = '', hours = 168) {
+    return this.request('GET', 'statusschedule', {tag, hours});
+  }
 }
 
 export default Hydrawise;

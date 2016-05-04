@@ -11,3 +11,12 @@ test('Customer Details', t => {
     t.pass();
   });
 });
+
+test('Status Schedule', t => {
+  return hydrawise.statusschedule().then(data => {
+    if (data.error_msg) {
+      t.fail(`Error: ${data.error_msg}`);
+    }
+    t.pass();
+  });
+});
