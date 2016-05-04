@@ -20,3 +20,13 @@ test('Status Schedule', t => {
     t.pass();
   });
 });
+
+test('Status Schedule All', t => {
+  return hydrawise.statusschedule('hydrawise_all').then(data => {
+    console.log(data);
+    if (data.error_msg) {
+      t.fail(`Error: ${data.error_msg}`);
+    }
+    t.pass();
+  });
+});
