@@ -31,9 +31,24 @@ test('Status Schedule All', t => {
 });
 
 test('Set Controller', t => {
-  return hydrawise.setcontroller('11742').then(data => {
-    if (data.error_msg) {
-      t.fail(`Error: ${data.error_msg}`);
+  return hydrawise.setcontroller('11774').then(() => {
+    t.pass();
+  });
+});
+
+test('Stop Zones', t => {
+  return hydrawise.setzone('stopall').then(data => {
+    if (data.message_type === 'error') {
+      t.fail(`Error: ${data.message}`);
+    }
+    t.pass();
+  });
+});
+
+test('Run All Zones', t => {
+  return hydrawise.setzone('runall', {period_id: '999', custom: '60'}).then(data => {
+    if (data.message_type === 'error') {
+      t.fail(`Error: ${data.message}`);
     }
     t.pass();
   });

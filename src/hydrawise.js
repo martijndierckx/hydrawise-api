@@ -27,8 +27,12 @@ class Hydrawise {
     return this.request('GET', 'statusschedule', {tag, hours});
   }
 
-  setcontroller(controller_id) {
-    return this.request('GET', 'setcontroller', {controller_id, json: true});
+  setcontroller(controllerid) {
+    return this.request('GET', 'setcontroller', {controllerid, json: true});
+  }
+
+  setzone(action, params) {
+    return this.request('GET', 'setzone', {action, ...params});
   }
 }
 
