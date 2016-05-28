@@ -1,5 +1,7 @@
 # Hydrawise API
 
+[![Build Status](https://travis-ci.org/paulmolluzzo/hydrawise-api.svg?branch=master)](https://travis-ci.org/paulmolluzzo/hydrawise-api)
+
 This is a client for the [Hydrawise API](https://hydrawise.com/support/using-api/). [Hydrawise](https://hydrawise.com) is an internet-controlled home irrigation system.
 
 It provides access to the following endpoints:
