@@ -13,8 +13,8 @@ It provides access to the following endpoints:
 ### Initial Setup
 
 ```js
-import Hydrawise from 'hydrawise-api';
-const hydrawise = new Hydrawise(YOUR_API_KEY);
+const Hydrawise = require('hydrawise-api');
+const myHydrawise = Hydrawise(YOUR_API_KEY);
 ```
 
 ### Customer Details
@@ -22,7 +22,7 @@ const hydrawise = new Hydrawise(YOUR_API_KEY);
 Get cusetomer info.
 
 ```js
-hydrawise.customerdetails()
+myHydrawise.customerdetails()
   .then(data => console.log(data))
   .catch(error => console.log(error));
 ```
@@ -32,7 +32,7 @@ hydrawise.customerdetails()
 Get the status of a controller. You can pass the param `hydrawise_all` or a specific tag or leave empty for the current controller. The second parameter is how far in advance (in hours) you want to get the schedule, and it will default to the maximum of 168.
 
 ```js
-hydrawise.statusschedule()
+myHydrawise.statusschedule()
   .then(data => console.log(data))
   .catch(error => console.log(error));
 ```
@@ -44,7 +44,7 @@ Set a controller for controller-specific commands.
 **_Note: This endpoint seems to not respond with any data, so a non-error is a "pass" I guess?_**
 
 ```js
-hydrawise.setcontroller(controller_id)
+myHydrawise.setcontroller(controller_id)
   .then()
   .catch(error => console.log(error));
 ```
@@ -55,17 +55,17 @@ This is how you set a zone to run, suspend, or stop. The params are an action an
 
 ```js
 // run all for 10 minutes
-hydrawise.setzone('runall', {period_id: '666', custom: '600'})
+myHydrawise.setzone('runall', {period_id: '666', custom: '600'})
   .then(data => console.log(data))
   .catch(error => console.log(error));
 
 // stop all
-hydrawise.setzone('stopall')
+myHydrawise.setzone('stopall')
   .then(data => console.log(data))
   .catch(error => console.log(error));
 
 // run zone for 5 minutes
-hydrawise.setzone('run', {period_id: '123', custom: '300', relay_id: your_relay_id})
+myHydrawise.setzone('run', {period_id: '123', custom: '300', relay_id: your_relay_id})
   .then(data => console.log(data))
   .catch(error => console.log(error));
 ```

@@ -9,6 +9,3 @@ node_modules
 
 # Optional npm cache directory
 .npm
-
-# ignore the output lib
-lib

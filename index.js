@@ -1,6 +1,6 @@
 'use strict';
 
-import rp from 'request-promise';
+const rp = require('request-promise');
 
 class Hydrawise {
   constructor(key) {
@@ -15,7 +15,8 @@ class Hydrawise {
       json: true
     };
 
-    options.qs = {api_key: this.api_key, ...params};
+    options.qs = params;
+    options.qs.api_key = this.api_key;
     return rp(options);
   }
 
@@ -31,9 +32,12 @@ class Hydrawise {
     return this.request('GET', 'setcontroller', {controllerid, json: true});
   }
 
-  setzone(action, params) {
-    return this.request('GET', 'setzone', {action, ...params});
+  setzone(action, params = {}) {
+    params.action = action;
+    return this.request('GET', 'setzone', params);
   }
 }
 
-export default Hydrawise;
+module.exports = apiKey => {
+  return new Hydrawise(apiKey);
+};

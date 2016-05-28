@@ -1,10 +1,10 @@
-import test from 'ava';
-import Hydrawise from '../lib/hydrawise';
+const test = require('ava');
+const hydrawise = require('../index');
 
-const hydrawise = new Hydrawise('53DC-7E24-07E8-CD7D');
+const h = hydrawise('53DC-7E24-07E8-CD7D');
 
 test('Customer Details', t => {
-  return hydrawise.customerdetails().then(data => {
+  return h.customerdetails().then(data => {
     if (data.error_msg) {
       t.fail(`Error: ${data.error_msg}`);
     }
@@ -13,7 +13,7 @@ test('Customer Details', t => {
 });
 
 test('Status Schedule', t => {
-  return hydrawise.statusschedule().then(data => {
+  return h.statusschedule().then(data => {
     if (data.error_msg) {
       t.fail(`Error: ${data.error_msg}`);
     }
@@ -22,7 +22,7 @@ test('Status Schedule', t => {
 });
 
 test('Status Schedule All', t => {
-  return hydrawise.statusschedule('hydrawise_all').then(data => {
+  return h.statusschedule('hydrawise_all').then(data => {
     if (data.error_msg) {
       t.fail(`Error: ${data.error_msg}`);
     }
@@ -31,13 +31,13 @@ test('Status Schedule All', t => {
 });
 
 test('Set Controller', t => {
-  return hydrawise.setcontroller('11774').then(() => {
+  return h.setcontroller('11774').then(() => {
     t.pass();
   });
 });
 
 test('Stop Zones', t => {
-  return hydrawise.setzone('stopall').then(data => {
+  return h.setzone('stopall').then(data => {
     if (data.message_type === 'error') {
       t.fail(`Error: ${data.message}`);
     }
@@ -46,7 +46,7 @@ test('Stop Zones', t => {
 });
 
 test('Run All Zones', t => {
-  return hydrawise.setzone('runall', {period_id: '999', custom: '60'}).then(data => {
+  return h.setzone('runall', {period_id: '999', custom: '60'}).then(data => {
     if (data.message_type === 'error') {
       t.fail(`Error: ${data.message}`);
     }
