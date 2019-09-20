@@ -21,8 +21,8 @@ test('Status Schedule', t => {
   });
 });
 
-test('Status Schedule All', t => {
-  return h.statusschedule('hydrawise_all').then(data => {
+test('Status Schedule For Specific Controller', t => {
+  return h.statusschedule('11774').then(data => {
     if (data.error_msg) {
       t.fail(`Error: ${data.error_msg}`);
     }

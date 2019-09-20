@@ -4,7 +4,7 @@ const rp = require('request-promise');
 
 class Hydrawise {
   constructor(key) {
-    this.url = 'https://hydrawise.com/api/v1/';
+    this.url = 'https://app.hydrawise.com/api/v1/';
     this.api_key = key;
   }
 
@@ -24,8 +24,13 @@ class Hydrawise {
     return this.request('GET', 'customerdetails', {type: 'controllers'});
   }
 
-  statusschedule(tag = '', hours = '168') {
-    return this.request('GET', 'statusschedule', {tag, hours});
+  statusschedule(controller_id = null, hours = '168') {
+    const params = {hours};
+    if (controller_id) {
+      params.controller_id = controller_id;
+    }
+
+    return this.request('GET', 'statusschedule', params);
   }
 
   setcontroller(controllerid) {
