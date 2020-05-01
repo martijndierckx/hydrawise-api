@@ -1,42 +1,31 @@
 {
   "name": "hydrawise-api",
-  "version": "0.1.0",
-  "description": "Library for accessing the Hydrawise API",
+  "version": "1.0.0",
+  "description": "Library for accessing the Hydrawise API via the cloud or directly on the local network",
   "repository": {
     "type": "git",
     "url": "https://github.com/paulmolluzzo/hydrawise-api.git"
   },
   "main": "index.js",
-  "scripts": {
-    "test": "xo && ava"
-  },
   "keywords": [
     "hydrawise",
     "api",
-    "iot"
+    "iot",
+    "sprinklers",
+    "hunter",
+    "hunter industries"
   ],
-  "author": "Paul Molluzzo (https://paul.molluzzo.com)",
+  "contributors": [
+    "Martijn Dierckx",
+    "Paul Molluzzo (https://paul.molluzzo.com)"
+  ],
   "license": "MIT",
-  "devDependencies": {
-    "ava": "^0.14.0",
-    "xo": "^0.15.0"
-  },
-  "xo": {
-    "esnext": true,
-    "envs": [
-      "browser"
-    ],
-    "rules": {
-      "new-cap": 0,
-      "camelcase": [0, {"properties": "always"}]
-    },
-    "space": true
-  },
   "engines": {
     "node": ">=6.0.0",
-    "npm": "3.8.0"
+    "npm": ">=3.8.0"
   },
   "dependencies": {
-    "request-promise": "^3.0.0"
+    "request": "^2.88.2",
+    "request-promise": "^4.2.5"
   }
 }

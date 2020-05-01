@@ -2,78 +2,108 @@
 
 [![Build Status](https://travis-ci.org/paulmolluzzo/hydrawise-api.svg?branch=master)](https://travis-ci.org/paulmolluzzo/hydrawise-api)
 
-This is a client for the [Hydrawise API](https://hydrawise.com/support/using-api/). [Hydrawise](https://hydrawise.com) is an internet-controlled home irrigation system.
+This is a client for the [Hydrawise API](https://support.hydrawise.com/hc/en-us/articles/360008965753-Hydrawise-API-Information). [Hydrawise](https://hydrawise.com) is an internet-controlled home irrigation system.
 
-It provides access to the following endpoints:
-* [Customer Details](#customer-details)
-* [Status Schedule](#status-schedule)
-* [Set Controller](#set-controller)
-* [Set Zone](#set-zone)
+On a very basic level, it allows you to do:
+* [Get zones](#get-zones)
+* [Run a command on a zone](#run-a-command-on-a-zone) (run/stop/suspend)
+* [Command all zones at once](#command-all-zones-at-once)
 
-## Usage
+For all possibilities, have a look at the inline code documentation
 
-### Initial Setup
+## Getting started
+
+When possible use a local connection to your controller since it's not rate limited (HTTP error 429) and suffers no delays when trying to run commands on zones.
+
+### Setup for a cloud connection
 
 ```js
 const Hydrawise = require('hydrawise-api');
-const myHydrawise = Hydrawise(YOUR_API_KEY);
+const myHydrawise = Hydrawise({ type:'CLOUD', key:'YOUR_API_KEY' });
 ```
 
-### Customer Details
+You can obtain your API key from the "Account Details" screen on the [Hydrawise platform](https://app.hydrawise.com/config/account/details)
 
-Get cusetomer info.
+### Setup for a local connection
 
 ```js
-myHydrawise.customerdetails()
-  .then(data => console.log(data))
-  .catch(error => console.log(error));
+const Hydrawise = require('hydrawise-api');
+const myHydrawise = Hydrawise({ type:'LOCAL', host:'HOSTNAME_OR_IP_ADDRESS', password:'YOUR_CONTROLLER_PASSWORD' });
 ```
 
-### Status Schedule
+You can also provide a *user* parameter, but this should be 'admin' in most cases.
 
-Get the status of a controller. You can pass the param `hydrawise_all` or a specific tag or leave empty for the current controller. The second parameter is how far in advance (in hours) you want to get the schedule, and it will default to the maximum of 168.
+## Basic usage
+
+### Get Zones
+
+Get all zones and see their status.
 
 ```js
-myHydrawise.statusschedule()
-  .then(data => console.log(data))
+myHydrawise.getZones()
+  .then(zones => console.log(zones))
   .catch(error => console.log(error));
 ```
 
-### Set Controller
-
-Set a controller for controller-specific commands.
-
-**_Note: This endpoint seems to not respond with any data, so a non-error is a "pass" I guess?_**
+This will return an array of HydrawiseZone objects containing the following info:
 
 ```js
-myHydrawise.setcontroller(controller_id)
-  .then()
-  .catch(error => console.log(error));
+`{Number} relayID` - The unique relay number known to the Hydrawise cloud
+`{Number} zone` - The local zone/relay number
+`{String} name` - The name of the zone
+`{Date} nextRunAt` - The date & time of the next scheduled run 
+`{Number} nextRunDuration` - Run time in seconds of the next run defined by nextRunAt
+`{Boolean} isSuspended` - Returns true when the zoneis currently suspended
+`{Boolean} isRunning` - Returns true when the zone is actively running
+`{Number} remainingRunningTime` - Remaining run time in seconds when isRunning = true
 ```
 
-### Set Zone
+By default only the active zones are returned, you can change this behaviour by calling getZones(false) instead.
 
-This is how you set a zone to run, suspend, or stop. The params are an action and additional params `period_id`, `custom` for a duration in seconds, and `relay_id` for a specific zone.
+### Run a command on a zone
+
+You can execute a couple of basic commands on each zone: `run()`, `suspend()` or `stop()`
 
 ```js
-// run all for 10 minutes
-myHydrawise.setzone('runall', {period_id: '666', custom: '600'})
-  .then(data => console.log(data))
-  .catch(error => console.log(error));
-
-// stop all
-myHydrawise.setzone('stopall')
-  .then(data => console.log(data))
-  .catch(error => console.log(error));
-
-// run zone for 5 minutes
-myHydrawise.setzone('run', {period_id: '123', custom: '300', relay_id: your_relay_id})
-  .then(data => console.log(data))
-  .catch(error => console.log(error));
+myHydrawise.getZones()
+  .then(zones => {
+    zone[0].run().then((info) => {
+      console.log('success');
+    }).catch(error => console.log(error));
+  }).catch(error => console.log(error));
 ```
+
+For the run & suspend commands you are able to provide a custom duration in seconds: `run(600)` (for 10 mins).
+If no custom duration was provided, the default run time configured for the zone will be used. 
+
+Zones can also be commanded directly from the Hydrawise object:
+
+```js
+`myHydrawise.runZone(1)` - Run by local zone number (only. for local bindings)
+`myHydrawise.runZone(123123)` - Run by unique relay ID (only. for cloud bindings)
+`myHydrawise.runZone(myHydrawiseZoneObject)` - Run by the HydrawiseZone object returned by `getZones()`
+```
+
+### Command all zones at once
+
+It's also possible to command all zones at the same time:
+
+```js
+myHydrawise.runAllZones()
+  .then(info => {
+     console.log('success');
+  }).catch(error => console.log(error));
+```
+
+Here as well, you are able to provide a custom duration: `runAllZones(600)` (for 10 mins).
 
 ------
 
-MIT
+## Contributors
 
-©2016 Paul Molluzzo
+* Martijn Dierckx - Complete rewrite to service both the cloud & local API binding
+* [Paul Molluzzo](https://paul.molluzzo.com)) - Initial 0.1.0 version containing the cloud binding
+
+Tested on a configuration with a single HC6 controller. If you have multiple controllers in your configuration and you run into problems, you're free to create an issue or contribute yourself :-)
+
+MIT license
