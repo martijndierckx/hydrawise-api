@@ -48,14 +48,14 @@ myHydrawise.getZones()
 This will return an array of HydrawiseZone objects containing the following info:
 
 ```js
-`{Number} relayID` - The unique relay number known to the Hydrawise cloud
-`{Number} zone` - The local zone/relay number
-`{String} name` - The name of the zone
-`{Date} nextRunAt` - The date & time of the next scheduled run 
-`{Number} nextRunDuration` - Run time in seconds of the next run defined by nextRunAt
-`{Boolean} isSuspended` - Returns true when the zoneis currently suspended
-`{Boolean} isRunning` - Returns true when the zone is actively running
-`{Number} remainingRunningTime` - Remaining run time in seconds when isRunning = true
+{Number} relayID - The unique relay number known to the Hydrawise cloud
+{Number} zone - The local zone/relay number
+{String} name - The name of the zone
+{Date} nextRunAt - The date & time of the next scheduled run 
+{Number} nextRunDuration - Run time in seconds of the next run defined by nextRunAt
+{Boolean} isSuspended - Returns true when the zoneis currently suspended
+{Boolean} isRunning - Returns true when the zone is actively running
+{Number} remainingRunningTime - Remaining run time in seconds when isRunning = true
 ```
 
 By default only the active zones are returned, you can change this behaviour by calling getZones(false) instead.
@@ -79,9 +79,9 @@ If no custom duration was provided, the default run time configured for the zone
 Zones can also be commanded directly from the Hydrawise object:
 
 ```js
-`myHydrawise.runZone(1)` - Run by local zone number (only. for local bindings)
-`myHydrawise.runZone(123123)` - Run by unique relay ID (only. for cloud bindings)
-`myHydrawise.runZone(myHydrawiseZoneObject)` - Run by the HydrawiseZone object returned by `getZones()`
+myHydrawise.runZone(1) - Run by local zone number (only. for local bindings)
+myHydrawise.runZone(123123) - Run by unique relay ID (only. for cloud bindings)
+myHydrawise.runZone(myHydrawiseZoneObject) - Run by the HydrawiseZone object returned by getZones()
 ```
 
 ### Command all zones at once
@@ -102,7 +102,7 @@ Here as well, you are able to provide a custom duration: `runAllZones(600)` (for
 ## Contributors
 
 * Martijn Dierckx - Complete rewrite to service both the cloud & local API binding
-* [Paul Molluzzo](https://paul.molluzzo.com)) - Initial 0.1.0 version containing the cloud binding
+* [Paul Molluzzo](https://paul.molluzzo.com) - Initial 0.1.0 version containing the cloud binding
 
 Tested on a configuration with a single HC6 controller. If you have multiple controllers in your configuration and you run into problems, you're free to create an issue or contribute yourself :-)
 
