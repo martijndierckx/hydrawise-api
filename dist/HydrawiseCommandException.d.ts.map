@@ -1,0 +1,1 @@
+{"version":3,"file":"HydrawiseCommandException.d.ts","sourceRoot":"","sources":["../src/HydrawiseCommandException.ts"],"names":[],"mappings":"AAAA;;GAEG;AAEH,gFAAgF;AAChF,qBAAa,yBAA0B,SAAQ,KAAK;IAE5C,IAAI,EAAE,IAAI,CAAC;gBAEN,OAAO,EAAE,MAAM,EAAE,GAAG,MAAM,EAAC,GAAG;CAS1C"}

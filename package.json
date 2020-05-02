@@ -6,7 +6,9 @@
     "type": "git",
     "url": "https://github.com/paulmolluzzo/hydrawise-api.git"
   },
-  "main": "index.js",
+  "main": "dist/Hydrawise.js",
+  "type": "commonjs",
+  "types": "./dist/Hydrawise.d.ts",
   "keywords": [
     "hydrawise",
     "api",
@@ -15,17 +17,28 @@
     "hunter",
     "hunter industries"
   ],
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "build": "rimraf ./dist && tsc",
+    "prepublishOnly": "npm run build",
+    "postpublish": "npm run clean",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "contributors": [
     "Martijn Dierckx",
     "Paul Molluzzo (https://paul.molluzzo.com)"
   ],
   "license": "MIT",
   "engines": {
-    "node": ">=6.0.0",
-    "npm": ">=3.8.0"
+    "node": ">=11.0.0",
+    "npm": ">=6.9.0"
   },
   "dependencies": {
-    "request": "^2.88.2",
-    "request-promise": "^4.2.5"
+    "axios": "^0.19.2"
+  },
+  "devDependencies": {
+    "@types/node": "^10.17.19",
+    "rimraf": "^3.0.2",
+    "typescript": "^3.8.3"
   }
 }
