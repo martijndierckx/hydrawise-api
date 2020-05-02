@@ -6,9 +6,9 @@
     "type": "git",
     "url": "https://github.com/paulmolluzzo/hydrawise-api.git"
   },
-  "main": "dist/Hydrawise.js",
+  "main": "dist/index.js",
   "type": "commonjs",
-  "types": "./dist/Hydrawise.d.ts",
+  "types": "./dist/index.d.ts",
   "keywords": [
     "hydrawise",
     "api",
