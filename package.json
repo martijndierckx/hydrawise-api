@@ -1,6 +1,6 @@
 {
   "name": "hydrawise-api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Library for accessing the Hydrawise API via the cloud or directly on the local network",
   "repository": {
     "type": "git",
