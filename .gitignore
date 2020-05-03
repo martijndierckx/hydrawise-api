@@ -5,6 +5,8 @@ logs
 *.log
 npm-debug.log*
 
+TESTDATA.md
+
 node_modules
 
 # Optional npm cache directory

@@ -1,10 +1,21 @@
-'use strict';
 /**
  * @author Martijn Dierckx
  */
 
+import { Hydrawise } from "./Hydrawise";
+
 /** Class representing a Hydrawise zone */
-class HydrawiseZone {
+export class HydrawiseZone {
+
+	public apiBinding: Hydrawise;
+	public relayID: number;
+	public zone: number;
+	public name: string;
+	public nextRunAt: Date;
+	public nextRunDuration: number;
+	public isSuspended: boolean;
+	public isRunning: boolean;
+	public remainingRunningTime: number;
 
 	/**
 	 * Create a new instance of a HydrawiseZone
@@ -19,7 +30,7 @@ class HydrawiseZone {
 	 * @param {boolean} options.isRunning - Returns true when the zone is actively running
 	 * @param {number} options.remainingRunningTime - Remaining run time in seconds when isRunning = true
 	 */
-	constructor(options) {
+	constructor(options: any) {
 		this.apiBinding = options.apiBinding;
 		this.relayID = options.relayID;
 		this.zone = options.zone;
@@ -36,7 +47,7 @@ class HydrawiseZone {
 	 * @param {number} [duration] - How long should the command be executed
 	 * @return {Promise} A Promise which will be resolved when the command has been executed.
 	 */
-	run(duration) {
+	run(duration?: number): Promise<any> {
 		return this.apiBinding.commandZone('run', this, duration);
 	}
 
@@ -44,7 +55,7 @@ class HydrawiseZone {
 	 * Sends the stop command to the zone/relay
 	 * @return {Promise} A Promise which will be resolved when the command has been executed.
 	 */
-	stop() {
+	stop(): Promise<any> {
 		return this.apiBinding.commandZone('stop', this);
 	}
 
@@ -53,11 +64,7 @@ class HydrawiseZone {
 	 * @param {number} [duration] - How long should the command be executed
 	 * @return {Promise} A Promise which will be resolved when the command has been executed.
 	 */
-	suspend(duration) {
+	suspend(duration?: number): Promise<any> {
 		return this.apiBinding.commandZone('suspend', this, duration);
 	}
 }
-
-module.exports = options => {
-	return new HydrawiseZone(options);
-};

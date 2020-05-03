@@ -18,8 +18,8 @@ When possible use a local connection to your controller since it's not rate limi
 ### Setup for a cloud connection
 
 ```js
-const Hydrawise = require('hydrawise-api');
-const myHydrawise = Hydrawise({ type:'CLOUD', key:'YOUR_API_KEY' });
+const Hydrawise = require('hydrawise-api').Hydrawise;
+const myHydrawise = new Hydrawise({ type:'CLOUD', key:'YOUR_API_KEY' });
 ```
 
 You can obtain your API key from the "Account Details" screen on the [Hydrawise platform](https://app.hydrawise.com/config/account/details)
@@ -27,8 +27,8 @@ You can obtain your API key from the "Account Details" screen on the [Hydrawise 
 ### Setup for a local connection
 
 ```js
-const Hydrawise = require('hydrawise-api');
-const myHydrawise = Hydrawise({ type:'LOCAL', host:'HOSTNAME_OR_IP_ADDRESS', password:'YOUR_CONTROLLER_PASSWORD' });
+const Hydrawise = require('hydrawise-api').Hydrawise;
+const myHydrawise = new Hydrawise({ type:'LOCAL', host:'HOSTNAME_OR_IP_ADDRESS', password:'YOUR_CONTROLLER_PASSWORD' });
 ```
 
 You can also provide a *user* parameter, but this should be 'admin' in most cases.
@@ -48,14 +48,14 @@ myHydrawise.getZones()
 This will return an array of HydrawiseZone objects containing the following info:
 
 ```js
-{Number} relayID - The unique relay number known to the Hydrawise cloud
-{Number} zone - The local zone/relay number
-{String} name - The name of the zone
+{number} relayID - The unique relay number known to the Hydrawise cloud
+{number} zone - The local zone/relay number
+{string} name - The name of the zone
 {Date} nextRunAt - The date & time of the next scheduled run 
-{Number} nextRunDuration - Run time in seconds of the next run defined by nextRunAt
-{Boolean} isSuspended - Returns true when the zoneis currently suspended
-{Boolean} isRunning - Returns true when the zone is actively running
-{Number} remainingRunningTime - Remaining run time in seconds when isRunning = true
+{number} nextRunDuration - Run time in seconds of the next run defined by nextRunAt
+{boolean} isSuspended - Returns true when the zoneis currently suspended
+{boolean} isRunning - Returns true when the zone is actively running
+{number} remainingRunningTime - Remaining run time in seconds when isRunning = true
 ```
 
 By default only the active zones are returned, you can change this behaviour by calling getZones(false) instead.
@@ -101,7 +101,7 @@ Here as well, you are able to provide a custom duration: `runAllZones(600)` (for
 
 ## Contributors
 
-* Martijn Dierckx - Complete rewrite to service both the cloud & local API binding
+* Martijn Dierckx - Complete rewrite to service both the cloud & local API binding in TypeScript
 * [Paul Molluzzo](https://paul.molluzzo.com) - Initial 0.1.0 version containing the cloud binding
 
 Tested on a configuration with a single HC6 controller. If you have multiple controllers in your configuration and you run into problems, you're free to create an issue or contribute yourself :-)

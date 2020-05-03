@@ -1,11 +1,13 @@
-'use strict';
 /**
  * @author Martijn Dierckx
  */
 
 /** Class representing a specifc error triggered by the Hydrawise API binding */
-class HydrawiseCommandException extends Error {
-	constructor(message, ...params) {
+export class HydrawiseCommandException extends Error {
+	
+	public date: Date;
+
+	constructor(message: string, ...params:any) {
 		super(...params);
 
 		Error.captureStackTrace(this, HydrawiseCommandException);
@@ -15,7 +17,3 @@ class HydrawiseCommandException extends Error {
 		this.date = new Date();
 	}
 }
-
-module.exports = (message, ...params) => {
-	return new HydrawiseCommandException(message, ...params);
-};
