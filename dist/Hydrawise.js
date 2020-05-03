@@ -26,7 +26,7 @@ class Hydrawise {
     constructor(options) {
         this.cloudUrl = 'https://app.hydrawise.com/api/v1/';
         this.type = options.type || HydrawiseConnectionType_1.HydrawiseConnectionType.CLOUD; // CLOUD or LOCAL 
-        this.url = options.host ? 'http://' + options.host + '/' : this.cloudUrl;
+        this.url = (this.type == HydrawiseConnectionType_1.HydrawiseConnectionType.LOCAL ? 'http://' + options.host + '/' : this.cloudUrl);
         // Local Auth
         this.localAuthUsername = options.user || 'admin';
         this.localAuthPassword = options.password || '';
@@ -57,7 +57,7 @@ class Hydrawise {
             }
             // API key auth for cloud binding
             else {
-                options.qs.api_key = this.cloudAuthAPIkey;
+                options.params.api_key = this.cloudAuthAPIkey;
             }
             // Send request
             axios_1.default(options).then((response) => {
@@ -191,7 +191,7 @@ class Hydrawise {
      * @param {boolean} [onlyConfigured = true] - Only return zones/relays which have been configured
      * @return {Promise} A Promise which will be resolved when all zones have been retrieved
      */
-    getZones(onlyConfigured = true) {
+    getZones() {
         let that = this;
         // Get started
         let promise = new Promise((resolve, reject) => {
@@ -201,7 +201,7 @@ class Hydrawise {
                 // Check every returned relay
                 data.relays.map((z) => {
                     // Only configured zones
-                    if (onlyConfigured && z.type != 110) {
+                    if (that.type == HydrawiseConnectionType_1.HydrawiseConnectionType.CLOUD || z.lastwaterepoch != 0) {
                         // Zone
                         let zone = {
                             apiBinding: that,

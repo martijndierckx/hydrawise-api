@@ -32,7 +32,7 @@ export declare class HydrawiseZone {
      * @param {number} [duration] - How long should the command be executed
      * @return {Promise} A Promise which will be resolved when the command has been executed.
      */
-    run(duration: number): Promise<any>;
+    run(duration?: number): Promise<any>;
     /**
      * Sends the stop command to the zone/relay
      * @return {Promise} A Promise which will be resolved when the command has been executed.
@@ -43,6 +43,6 @@ export declare class HydrawiseZone {
      * @param {number} [duration] - How long should the command be executed
      * @return {Promise} A Promise which will be resolved when the command has been executed.
      */
-    suspend(duration: number): Promise<any>;
+    suspend(duration?: number): Promise<any>;
 }
 //# sourceMappingURL=HydrawiseZone.d.ts.map

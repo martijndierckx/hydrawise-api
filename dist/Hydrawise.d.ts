@@ -96,7 +96,7 @@ export declare class Hydrawise {
      * @param {boolean} [onlyConfigured = true] - Only return zones/relays which have been configured
      * @return {Promise} A Promise which will be resolved when all zones have been retrieved
      */
-    getZones(onlyConfigured?: boolean): Promise<HydrawiseZone[]>;
+    getZones(): Promise<HydrawiseZone[]>;
     /**
      * Retrieves all controllers known to the Hydrawise cloud
      * @return {Promise} A Promise which will be resolved when all controllers have been retrieved
