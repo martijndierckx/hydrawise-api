@@ -8,6 +8,7 @@ import { HydrawiseZone } from './HydrawiseZone';
 import { HydrawiseController } from './HydrawiseController';
 import { HydrawiseCommandException } from './HydrawiseCommandException';
 import Axios from 'axios';
+import { ifError } from 'assert';
 
 interface HydrawiseConfiguration {
 	type : HydrawiseConnectionType,
@@ -101,7 +102,7 @@ export class Hydrawise {
 	 * @param {string} action - The required command to be executed for the given zone/relay: run, suspend, stop
 	 * @param {(HydrawiseZone|number|number)} zoneOrRelay - The zone/relay you are targetting. Can be a zone object returned by getZones, a relay number (zone.zone) for local bindings or a relayID (zone.relayID) for cloud bindings
 	 * @param {number} [duration] - How long should the command be executed (only applicable for run & suspend)
-	 * @todo Check whether controller_id needs to sent when the account contains multiple zones
+	 * @todo Allow using a controller id instead of HydrawiseController object.
 	 * @return {Promise} A Promise which will be resolved when the command has been executed.
 	 */
 	public commandZone(action: string, zoneOrRelay: number | HydrawiseZone, duration?: number): Promise<any> {
@@ -116,16 +117,21 @@ export class Hydrawise {
 
 			// Set Relay number for local binding
 			if(that.type == HydrawiseConnectionType.LOCAL) {
-				opts.relay = typeof zoneOrRelay == 'object' ? zoneOrRelay.zone : zoneOrRelay // A zone object, as returned by getZones, or just the relayID can be sent
+				opts.relay = zoneOrRelay instanceof HydrawiseZone ? zoneOrRelay.zone : zoneOrRelay // A zone object, as returned by getZones, or just the relayID can be sent
 			} 
 			// Set Relay ID for cloud binding
 			else {
-				opts.relay_id = typeof zoneOrRelay == 'object' ? zoneOrRelay.relayID : zoneOrRelay // A zone object, as returned by getZones, or just the relayID can be sent
+				opts.relay_id = zoneOrRelay instanceof HydrawiseZone ? zoneOrRelay.relayID : zoneOrRelay // A zone object, as returned by getZones, or just the relayID can be sent
 			}
 
 			// Custom duration?
 			if(duration !== undefined) {
 				opts.custom = duration;
+			}
+
+			// Set controller if one was provided (only for cloud)
+			if(that.type == HydrawiseConnectionType.CLOUD && zoneOrRelay instanceof HydrawiseZone && zoneOrRelay.controller !== undefined && zoneOrRelay.controller instanceof HydrawiseController) {
+				opts.controller_id = zoneOrRelay.controller.id;
 			}
 
 			// Execute command
@@ -146,7 +152,7 @@ export class Hydrawise {
 	 * @todo Check whether controller_id needs to sent when the account contains multiple zones
 	 * @return {Promise} A Promise which will be resolved when the command has been executed.
 	 */
-	public commandAllZones(action: string, duration?: number): Promise<any> {
+	public commandAllZones(action: string, controller?: HydrawiseController | number, duration?: number): Promise<any> {
 		let that = this;
 
 		// Get started
@@ -161,6 +167,16 @@ export class Hydrawise {
 				opts.custom = duration;
 			}
 
+			// Specific controller? (only cloud)
+			if(that.type == HydrawiseConnectionType.CLOUD && controller !== undefined && controller !== null) {
+				if(controller instanceof HydrawiseController) {
+					opts.controller_id = controller.id;
+				}
+				else {
+					opts.controller_id = controller;
+				}
+			}
+
 			that.setZone(opts).then(data => {
 				resolve(data);
 			}).catch((err) => {
@@ -173,11 +189,11 @@ export class Hydrawise {
 
 	/**
 	 * Sends the run command to a single zone/relay
-	 * @param {(HydrawiseZone|number|number)} zoneOrRelay - The zone/relay you are targetting. Can be a zone object returned by getZones, a relay number (zone.zone) for local bindings or a relayID (zone.relayID) for cloud bindings
+	 * @param {(HydrawiseZone|number)} zoneOrRelay - The zone/relay you are targetting. Can be a zone object returned by getZones, a relay number (zone.zone) for local bindings or a relayID (zone.relayID) for cloud bindings
 	 * @param {number} [duration] - How long should the command be executed
 	 * @return {Promise} A Promise which will be resolved when the command has been executed.
 	 */
-	public runZone(zoneOrRelay: number | HydrawiseZone, duration?: number): Promise<any> {
+	public runZone(zoneOrRelay: HydrawiseZone | number, duration?: number): Promise<any> {
 		return this.commandZone('run', zoneOrRelay, duration);
 	}
 
@@ -186,35 +202,36 @@ export class Hydrawise {
 	 * @param {number} [duration] - How long should the command be executed
 	 * @return {Promise} A Promise which will be resolved when the command has been executed.
 	 */
-	public runAllZones(duration?: number): Promise<any> {
-		return this.commandAllZones('runall', duration);
+	public runAllZones(controller?: HydrawiseController, duration?: number): Promise<any> {
+		return this.commandAllZones('runall', controller, duration);
 	}
 
 	/**
 	 * Sends the suspend command to a single zone/relay
-	 * @param {(HydrawiseZone|number|number)} zoneOrRelay - The zone/relay you are targetting. Can be a zone object returned by getZones, a relay number (zone.zone) for local bindings or a relayID (zone.relayID) for cloud bindings
+	 * @param {(HydrawiseZone|number)} zoneOrRelay - The zone/relay you are targetting. Can be a zone object returned by getZones, a relay number (zone.zone) for local bindings or a relayID (zone.relayID) for cloud bindings
 	 * @param {number} [duration] - How long should the command be executed
 	 * @return {Promise} A Promise which will be resolved when the command has been executed.
 	 */
-	public suspendZone(zoneOrRelay: number | HydrawiseZone, duration?: number): Promise<any> {
+	public suspendZone(zoneOrRelay: HydrawiseZone | number, duration?: number): Promise<any> {
 		return this.commandZone('suspend', zoneOrRelay, duration);
 	}
 
 	/**
-	 * Sends the suspend command to all zones/relays
+	 * Sends the suspend command to all zones/relays for a specific controller
 	 * @param {number} [duration] - How long should the command be executed
+	 * @param {HydrawiseController|number} [controller] - Return zones for a specific controller. If not specified, the zones of the deault controller are returned. 
 	 * @return {Promise} A Promise which will be resolved when the command has been executed.
 	 */
-	public suspendAllZones(duration?: number): Promise<any> {
-		return this.commandAllZones('suspendall', duration);
+	public suspendAllZones(controller?: HydrawiseController, duration?: number): Promise<any> {
+		return this.commandAllZones('suspendall', controller, duration);
 	}
 
 	/**
 	 * Sends the stop command to a single zone/relay
-	 * @param {(HydrawiseZone|number|number)} zoneOrRelay - The zone/relay you are targetting. Can be a zone object returned by getZones, a relay number (zone.zone) for local bindings or a relayID (zone.relayID) for cloud bindings
+	 * @param {(HydrawiseZone|number)} zoneOrRelay - The zone/relay you are targetting. Can be a zone object returned by getZones, a relay number (zone.zone) for local bindings or a relayID (zone.relayID) for cloud bindings
 	 * @return {Promise} A Promise which will be resolved when the command has been executed.
 	 */
-	public stopZone(zoneOrRelay: number | HydrawiseZone): Promise<any> {
+	public stopZone(zoneOrRelay: HydrawiseZone | number): Promise<any> {
 		return this.commandZone('stop', zoneOrRelay);
 	}
 
@@ -222,23 +239,34 @@ export class Hydrawise {
 	 * Sends the stop command to all zones/relays
 	 * @return {Promise} A Promise which will be resolved when the command has been executed.
 	 */
-	public stopAllZones(): Promise<any> {
-		return this.commandAllZones('stopall');
+	public stopAllZones(controller?: HydrawiseController): Promise<any> {
+		return this.commandAllZones('stopall', controller);
 	}
 
 	/**
 	 * Retrieves all zones/relays known to the server
-	 * @param {boolean} [onlyConfigured = true] - Only return zones/relays which have been configured
+	 * @param {HydrawiseController|number} [controller] - Return zones for a specific controller. If not specified, the zones of the deault controller are returned. 
 	 * @return {Promise} A Promise which will be resolved when all zones have been retrieved
 	 */
-	public getZones(): Promise<HydrawiseZone[]> {
+	public getZones(controller?: HydrawiseController | number): Promise<HydrawiseZone[]> {
 		let that = this;
 	
 		// Get started
 		let promise: Promise<HydrawiseZone[]> = new Promise((resolve, reject) => {
 			
+			// Controller set?
+			let controllerID;
+			if(controller !== undefined && controller !== null) {
+				if(controller instanceof HydrawiseController) {
+					controllerID = controller.id;
+				}
+				else {
+					controllerID = controller;
+				}
+			}
+
 			// Get relays
-			that.getStatusAndSchedule().then((data: any) => {
+			that.getStatusAndSchedule(controllerID).then((data: any) => {
 				let zones:HydrawiseZone[] = [];
 				
 				// Check every returned relay
@@ -257,8 +285,13 @@ export class Hydrawise {
 							nextRunDuration: z.run || z.run_seconds,
 							isSuspended: z.suspended !== undefined && z.suspended == 1,
 							isRunning: false,
-							remainingRunningTime: 0,
+							remainingRunningTime: 0
 						};
+
+						// Link controller to the zones if it was provided when calling the method
+						if(controller !== undefined && controller !== null && controller instanceof HydrawiseController) {
+							zone.controller = controller;
+						}
 
 						// Only available data for local connections
 						if(that.type == HydrawiseConnectionType.LOCAL) {
@@ -290,7 +323,7 @@ export class Hydrawise {
 	}
 
 	/**
-	 * Retrieves all controllers known to the Hydrawise cloud
+	 * Retrieves all controllers known to the Hydrawise cloud or returns a single dummy one for a local connection
 	 * @return {Promise} A Promise which will be resolved when all controllers have been retrieved
 	 */
 	public getControllers(): Promise<HydrawiseController[]> {
@@ -299,29 +332,44 @@ export class Hydrawise {
 		// Get started
 		let promise: Promise<HydrawiseController[]> = new Promise((resolve, reject) => {
 			
-			// Get Controllers
-			this.getCustomerDetails('controllers').then(data => {
-				let controllers: HydrawiseController[] = [];
+			// Cloud
+			if(that.type == HydrawiseConnectionType.CLOUD) {
 				
-				// Check every returned relay
-				data.controllers.map((c: any) => {
+				// Get Controllers
+				this.getCustomerDetails('controllers').then(data => {
+					let controllers: HydrawiseController[] = [];
 					
-					// Zone
-					let controller: any = {
-						id: c.controller_id,
-						name: c.name,
-						serialNumber: c.serial_number,
-						lastContactWithCloud: new Date(c.last_contact * 1000),
-						status: c.status
-					};
-					
-					controllers.push(new HydrawiseController(controller));
-				});
+					// Check every returned relay
+					data.controllers.map((c: any) => {
+						
+						// Controller
+						let controller: any = {
+							apiBinding: that,
+							id: c.controller_id,
+							name: c.name,
+							serialNumber: c.serial_number,
+							lastContactWithCloud: new Date(c.last_contact * 1000),
+							status: c.status
+						};
+						
+						controllers.push(new HydrawiseController(controller));
+					});
 
-				resolve(controllers);
-			}).catch((err) => {
-				reject(err);
-			});
+					resolve(controllers);
+				}).catch((err) => {
+					reject(err);
+				});
+			}
+			// Local
+			else {
+				// Controller
+				let controller: any = {
+					apiBinding: that,
+					name: that.url
+				};
+				
+				resolve([new HydrawiseController(controller)]);
+			}
 
 		});
 
@@ -333,7 +381,7 @@ export class Hydrawise {
 	/* -------- Raw API calls -------- */
 
 	/**
-	 * Gets the customer ID & list of available controllers configured in the Hydrawise cloud. Only available in cloud binding. 
+	 * Gets the customer ID & list of available controllers configured in the Hydrawise cloud. Only available in cloud binding.
 	 * @param {string} type - Defines the type of customer details to be retrieved alongside the customer ID
 	 * @return {Promise} A Promise which will be resolved when the request has returned from the cloud server.
 	 */
@@ -350,76 +398,40 @@ export class Hydrawise {
 
 	/**
 	 * Gets the status and schedule of the locally connected controller or all controllers in the cloud 
-	 * @param {string} type - Defines the type of customer details to be retrieved alongside the customer ID
-	 * @todo Check whether controller_id needs to sent when the account contains multiple zones
+	 * @param {number} [controller] - Return the status and schedule for a specific controller. If not specified, the zones of the deault controller are returned. 
 	 * @return {Promise} A Promise which will be resolved when the request has returned from the local or cloud server.
 	 */
-	public getStatusAndSchedule(tag: string = '', hours: string = '168'): Promise<any> {
-		let uri = (this.type == HydrawiseConnectionType.LOCAL ? 'get_sched_json.php' : 'statusschedule.php');
+	public getStatusAndSchedule(controller?: number): Promise<any> {
+		let uri: string = (this.type == HydrawiseConnectionType.LOCAL ? 'get_sched_json.php' : 'statusschedule.php');
+		let params: any = {};
 	
-		return this.request(uri, { tag, hours });
-	}
-
-	/*setController(controllerID: number): Promise<any> {
-		// Cloud only API
-		if (this.type  == HydrawiseConnectionType.LOCAL) { 
-			return new Promise((resolve, reject) => {
-				reject(new HydrawiseCommandException('Calling Cloud API function on a Local Binding'));
-			});
+		// Was a controller set?
+		if(controller !== undefined && controller !== null) {
+			params.controller_id = controller;
 		}
-		
-		return this.request('setcontroller.php', { controllerID, json: true });
-	}*/
+
+		// If no controller was set
+		return this.request(uri, params);
+	}
 
 	/**
 	 * Sends an action request to a specific or all zones
 	 * @param {object} params - Parameters object containing all parameters to be sent along with the request
+	 * @param {string} [params.relay_id] - The id of the relay which needs to be targetted. Not needed for runall, suspendall, stopall
 	 * @param {string} params.action - The action to be executed: run, stop, suspend, runall, suspendall, stopall
+	 * @param {number} [params.custom] - The amount of seconds the action needs to be run. Only for run, suspend, runall, suspendall
+	 * @param {number} [controller] - Needs to be specified if you have multiple controllers (cloud only)
 	 * @todo Complete params documentation
-	 * @todo Check whether controller_id needs to sent when the account contains multiple zones
 	 * @return {Promise} A Promise which will be resolved when the request has returned from the local or cloud server.
 	 */
-	public setZone(this: Hydrawise, params: any = {}): Promise<any> {
+	public setZone(params: any = {}, controller?: number): Promise<any> {
 		let uri: string = (this.type == HydrawiseConnectionType.LOCAL ? 'set_manual_data.php' : 'setzone.php');
 		
+		// Was a controller set?
+		if(controller !== undefined && controller !== null) {
+			params.controller_id = controller;
+		}
+
 		return this.request(uri, params);
-	}
-
-
-
-	/* -------- Original 0.1.0 function names for backwards compatibility -------- */
-
-	/**
-	 * Does the same as getCustomerDetails, and is only kept to be backwards compatible with version 0.1.0 of this module
-	 * @param {string} [type = controllers] - Defines the type of customer details to be retrieved alongside the customer ID
-	 * @alias getCustomerDetails
-	 * @return {Promise} A Promise which will be resolved when the request has returned from the cloud server.
-	 */
-	public customerdetails(type: string = 'controllers'): Promise<any> {
-		return this.getCustomerDetails(type);
-	}
-
-	/**
-	 * Does the same as getCustomerDetails, and is only kept to be backwards compatible with version 0.1.0 of this module
-	 * @alias getStatusAndSchedule
-	 * @deprecated since version 1.0.0. Please use getZones()
-	 * @return {Promise} A Promise which will be resolved when the request has returned from the local or cloud server.
-	 */
-	public statusschedule(tag: string = '', hours: string = '168'): Promise<any> {
-		return this.getStatusAndSchedule(tag, hours);
-	}
-
-	/*setcontroller(controllerID) {
-		return this.setController(controllerID);
-	}*/
-
-	/**
-	 * Does the same as setZone, and is only kept to be backwards compatible with version 0.1.0 of this module
-	 * @alias setZone
-	 * @deprecated since version 1.0.0. Please use runZone(), suspendZone(), stopZone(), runAllZones(), suspendAllZones(), stopAllZones() or the run(), suspend(), stop() commands on a HydrawiseZone object.
-	 * @return {Promise} A Promise which will be resolved when the request has returned from the local or cloud server.
-	 */
-	public setzone(params: any = {}): Promise<any> {
-		return this.setZone(params);
 	}
 }

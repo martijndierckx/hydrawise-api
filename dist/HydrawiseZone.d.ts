@@ -2,6 +2,7 @@
  * @author Martijn Dierckx
  */
 import { Hydrawise } from "./Hydrawise";
+import { HydrawiseController } from "./HydrawiseController";
 /** Class representing a Hydrawise zone */
 export declare class HydrawiseZone {
     apiBinding: Hydrawise;
@@ -13,6 +14,7 @@ export declare class HydrawiseZone {
     isSuspended: boolean;
     isRunning: boolean;
     remainingRunningTime: number;
+    controller: HydrawiseController;
     /**
      * Create a new instance of a HydrawiseZone
      * @param {object} options - Options object containing all parameters
@@ -25,6 +27,7 @@ export declare class HydrawiseZone {
      * @param {boolean} options.isSuspended - Returns true when the zoneis currently suspended
      * @param {boolean} options.isRunning - Returns true when the zone is actively running
      * @param {number} options.remainingRunningTime - Remaining run time in seconds when isRunning = true
+     * @param {HydrawiseController} [options.controller] - The controller linked to the zone
      */
     constructor(options: any);
     /**

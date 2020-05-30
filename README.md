@@ -5,6 +5,7 @@
 This is a client for the [Hydrawise API](https://support.hydrawise.com/hc/en-us/articles/360008965753-Hydrawise-API-Information). [Hydrawise](https://hydrawise.com) is an internet-controlled home irrigation system.
 
 On a very basic level, it allows you to do:
+* [Get controllers](#get-controllers)
 * [Get zones](#get-zones)
 * [Run a command on a zone](#run-a-command-on-a-zone) (run/stop/suspend)
 * [Command all zones at once](#command-all-zones-at-once)
@@ -35,13 +36,38 @@ You can also provide a *user* parameter, but this should be 'admin' in most case
 
 ## Basic usage
 
+### Get Controllers
+
+If you have multiple controllers you can use this function to retrieve them all. Once you know your controllers, you're able to get and/or command the connected zones to that controller.
+
+```js
+myHydrawise.getControllers()
+  .then(controllers => console.log(controllers))
+  .catch(error => console.log(error));
+```
+
 ### Get Zones
 
 Get all zones and see their status.
 
+If you only have a single controller, you can get the list of zones without first retrieving your controller details:
+
 ```js
 myHydrawise.getZones()
   .then(zones => console.log(zones))
+  .catch(error => console.log(error));
+```
+
+If you have multiple controllers you should first get your list of controllers and request the zones list for that specific controller (if you don't you only get the zones of your 'default' controller.):
+
+```js
+myHydrawise.getControllers()
+  .then((controllers) => {
+    // Get the zones for the first returned controller
+    controllers[0].getZones()
+    .then(zones => console.log(zones))
+    .catch(error => console.log(error));
+  })
   .catch(error => console.log(error));
 ```
 
@@ -58,8 +84,6 @@ This will return an array of HydrawiseZone objects containing the following info
 {number} remainingRunningTime - Remaining run time in seconds when isRunning = true
 ```
 
-By default only the active zones are returned, you can change this behaviour by calling getZones(false) instead.
-
 ### Run a command on a zone
 
 You can execute a couple of basic commands on each zone: `run()`, `suspend()` or `stop()`
@@ -67,6 +91,7 @@ You can execute a couple of basic commands on each zone: `run()`, `suspend()` or
 ```js
 myHydrawise.getZones()
   .then(zones => {
+    // Run the first returned zone  
     zone[0].run().then((info) => {
       console.log('success');
     }).catch(error => console.log(error));

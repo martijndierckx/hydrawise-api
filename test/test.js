@@ -8,36 +8,46 @@ else {
   hydrawise = new Hydrawise({ type: 'LOCAL', host: process.argv[2], password: process.argv[3] });
 }
 
-/* Get all zones -> run first zone -> get all zones -> stop first zone -> get all zones */
-hydrawise.getZones().then(function(data) {
+/* Get all controllers -> get all zones for first controller -> run first zone -> get all zones -> stop first zone -> get all zones */
+hydrawise.getControllers().then(function (data) {
   console.log(data);
   setTimeout(() => {
 
-    data[0].run().then(function(data) {
+    var controller = data[0];
+
+    controller.getZones().then(function (data) {
       console.log(data);
       setTimeout(() => {
-        
-        hydrawise.getZones().then(function(data) {
+
+        data[0].run().then(function (data) {
           console.log(data);
           setTimeout(() => {
-        
-            data[0].stop().then(function(data) {
+
+            controller.getZones().then(function (data) {
               console.log(data);
               setTimeout(() => {
-        
-                hydrawise.getZones().then(function(data) {
+
+                data[0].stop().then(function (data) {
                   console.log(data);
-        
-                  
+                  setTimeout(() => {
+
+                    controller.getZones().then(function (data) {
+                      console.log(data);
+
+                    }).catch((err) => {
+                      console.log(err);
+                    });
+
+                  }, 2000);
                 }).catch((err) => {
                   console.log(err);
                 });
-        
+
               }, 2000);
             }).catch((err) => {
               console.log(err);
             });
-    
+
           }, 2000);
         }).catch((err) => {
           console.log(err);
@@ -50,5 +60,5 @@ hydrawise.getZones().then(function(data) {
 
   }, 2000);
 }).catch((err) => {
-	console.log(err);
+  console.log(err);
 });

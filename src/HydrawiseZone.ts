@@ -3,6 +3,7 @@
  */
 
 import { Hydrawise } from "./Hydrawise";
+import { HydrawiseController } from "./HydrawiseController";
 
 /** Class representing a Hydrawise zone */
 export class HydrawiseZone {
@@ -16,6 +17,7 @@ export class HydrawiseZone {
 	public isSuspended: boolean;
 	public isRunning: boolean;
 	public remainingRunningTime: number;
+	public controller: HydrawiseController;
 
 	/**
 	 * Create a new instance of a HydrawiseZone
@@ -29,6 +31,7 @@ export class HydrawiseZone {
 	 * @param {boolean} options.isSuspended - Returns true when the zoneis currently suspended
 	 * @param {boolean} options.isRunning - Returns true when the zone is actively running
 	 * @param {number} options.remainingRunningTime - Remaining run time in seconds when isRunning = true
+	 * @param {HydrawiseController} [options.controller] - The controller linked to the zone
 	 */
 	constructor(options: any) {
 		this.apiBinding = options.apiBinding;
@@ -40,6 +43,7 @@ export class HydrawiseZone {
 		this.isSuspended = options.isSuspended;
 		this.isRunning = options.isRunning;
 		this.remainingRunningTime = options.remainingRunningTime;
+		this.controller = options.controller;
 	}
 
 	/**
@@ -47,7 +51,7 @@ export class HydrawiseZone {
 	 * @param {number} [duration] - How long should the command be executed
 	 * @return {Promise} A Promise which will be resolved when the command has been executed.
 	 */
-	run(duration?: number): Promise<any> {
+	public run(duration?: number): Promise<any> {
 		return this.apiBinding.commandZone('run', this, duration);
 	}
 
@@ -55,7 +59,7 @@ export class HydrawiseZone {
 	 * Sends the stop command to the zone/relay
 	 * @return {Promise} A Promise which will be resolved when the command has been executed.
 	 */
-	stop(): Promise<any> {
+	public stop(): Promise<any> {
 		return this.apiBinding.commandZone('stop', this);
 	}
 
@@ -64,7 +68,7 @@ export class HydrawiseZone {
 	 * @param {number} [duration] - How long should the command be executed
 	 * @return {Promise} A Promise which will be resolved when the command has been executed.
 	 */
-	suspend(duration?: number): Promise<any> {
+	public suspend(duration?: number): Promise<any> {
 		return this.apiBinding.commandZone('suspend', this, duration);
 	}
 }

@@ -17,6 +17,7 @@ class HydrawiseZone {
      * @param {boolean} options.isSuspended - Returns true when the zoneis currently suspended
      * @param {boolean} options.isRunning - Returns true when the zone is actively running
      * @param {number} options.remainingRunningTime - Remaining run time in seconds when isRunning = true
+     * @param {HydrawiseController} [options.controller] - The controller linked to the zone
      */
     constructor(options) {
         this.apiBinding = options.apiBinding;
@@ -28,6 +29,7 @@ class HydrawiseZone {
         this.isSuspended = options.isSuspended;
         this.isRunning = options.isRunning;
         this.remainingRunningTime = options.remainingRunningTime;
+        this.controller = options.controller;
     }
     /**
      * Sends the run command to the zone/relay
