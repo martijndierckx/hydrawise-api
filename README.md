@@ -15,6 +15,7 @@ For all possibilities, have a look at the inline code documentation
 ## Getting started
 
 When possible use a local connection to your controller since it's not rate limited (HTTP error 429) and suffers no delays when trying to run commands on zones.
+Local connections are only possible on firmware versions below v3.0.0 however.
 
 ### Setup for a cloud connection
 
