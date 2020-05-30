@@ -246,7 +246,7 @@ class Hydrawise {
                         if (that.type == HydrawiseConnectionType_1.HydrawiseConnectionType.LOCAL) {
                             zone.defaultRunDuration = z.normalRuntime * 60;
                         }
-                        // Running?
+                        // Running? (local connection)
                         if (data.running !== undefined) {
                             let runningZone = data.running.find((x) => {
                                 return x.relay_id == z.relay_id;
@@ -255,6 +255,11 @@ class Hydrawise {
                                 zone.isRunning = true;
                                 zone.remainingRunningTime = runningZone.time_left;
                             }
+                        }
+                        // Running? (cloud connection)
+                        if (z.time == 1) {
+                            zone.isRunning = true;
+                            zone.remainingRunningTime = z.run;
                         }
                         zones.push(new HydrawiseZone_1.HydrawiseZone(zone));
                     }

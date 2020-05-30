@@ -298,7 +298,7 @@ export class Hydrawise {
 							zone.defaultRunDuration = z.normalRuntime * 60;
 						}
 
-						// Running?
+						// Running? (local connection)
 						if(data.running !== undefined) {
 							let runningZone = data.running.find((x: any) => {
 								return x.relay_id == z.relay_id;
@@ -307,6 +307,12 @@ export class Hydrawise {
 								zone.isRunning = true;
 								zone.remainingRunningTime = runningZone.time_left;
 							}
+						}
+
+						// Running? (cloud connection)
+						if(z.time == 1) {
+							zone.isRunning = true;
+							zone.remainingRunningTime = z.run;
 						}
 						
 						zones.push(new HydrawiseZone(zone));
