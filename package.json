@@ -34,7 +34,7 @@
     "npm": ">=6.9.0"
   },
   "dependencies": {
-    "axios": "^0.19.2"
+    "axios": "^0.21.1"
   },
   "devDependencies": {
     "@types/node": "^10.17.19",
