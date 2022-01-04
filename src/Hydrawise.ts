@@ -431,7 +431,13 @@ export class Hydrawise {
 	 * @return {Promise} A Promise which will be resolved when the request has returned from the local or cloud server.
 	 */
 	public setZone(params: any = {}, controller?: number): Promise<any> {
-		let uri: string = (this.type == HydrawiseConnectionType.LOCAL ? 'set_manual_data.php' : 'setzone.php');
+		if (HydrawiseConnectionType.LOCAL){
+			let uri: string = (this.type == HydrawiseConnectionType.LOCAL ? 'set_manual_data.php' : 'setzone.php');
+		}
+		else
+		{
+			let uri: string = (this.type == HydrawiseConnectionType.CLOUD ? 'set_manual_data.php' : 'setzone.php');
+		}
 		
 		// Was a controller set?
 		if(controller !== undefined && controller !== null) {
