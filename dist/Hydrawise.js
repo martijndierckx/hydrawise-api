@@ -355,7 +355,14 @@ class Hydrawise {
      * @return {Promise} A Promise which will be resolved when the request has returned from the local or cloud server.
      */
     setZone(params = {}, controller) {
-        let uri = (this.type == HydrawiseConnectionType_1.HydrawiseConnectionType.LOCAL ? 'set_manual_data.php' : 'setzone.php');
+        if (HydrawiseConnectionType_1.HydrawiseConnectionType.LOCAL){
+            let uri = (this.type == HydrawiseConnectionType_1.HydrawiseConnectionType.LOCAL ? 'set_manual_data.php' : 'setzone.php');
+        }
+
+        if (HydrawiseConnectionType_1.HydrawiseConnectionType.CLOUD){
+            let uri = (this.type == HydrawiseConnectionType_1.HydrawiseConnectionType.CLOUD ? 'set_manual_data.php' : 'setzone.php');
+        }
+        
         // Was a controller set?
         if (controller !== undefined && controller !== null) {
             params.controller_id = controller;
