@@ -3,6 +3,7 @@
  * @author Martijn Dierckx
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.HydrawiseZone = void 0;
 /** Class representing a Hydrawise zone */
 class HydrawiseZone {
     /**

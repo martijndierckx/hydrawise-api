@@ -7,6 +7,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Hydrawise = void 0;
 const HydrawiseConnectionType_1 = require("./HydrawiseConnectionType");
 const HydrawiseZone_1 = require("./HydrawiseZone");
 const HydrawiseController_1 = require("./HydrawiseController");
@@ -60,7 +61,7 @@ class Hydrawise {
                 options.params.api_key = this.cloudAuthAPIkey;
             }
             // Send request
-            axios_1.default(options).then((response) => {
+            (0, axios_1.default)(options).then((response) => {
                 //Check for errors
                 if (response.data.messageType == 'error') {
                     reject(new HydrawiseCommandException_1.HydrawiseCommandException(response.data.message));

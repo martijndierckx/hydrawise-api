@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.HydrawiseConnectionType = void 0;
 /**
  * Enumeration for the different types of Hydrawise API bindings: Cloud or Local
  * @readonly
