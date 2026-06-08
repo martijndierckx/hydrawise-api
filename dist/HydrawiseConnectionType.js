@@ -10,5 +10,5 @@ var HydrawiseConnectionType;
 (function (HydrawiseConnectionType) {
     HydrawiseConnectionType["LOCAL"] = "LOCAL";
     HydrawiseConnectionType["CLOUD"] = "CLOUD";
-})(HydrawiseConnectionType = exports.HydrawiseConnectionType || (exports.HydrawiseConnectionType = {}));
+})(HydrawiseConnectionType || (exports.HydrawiseConnectionType = HydrawiseConnectionType = {}));
 //# sourceMappingURL=HydrawiseConnectionType.js.map

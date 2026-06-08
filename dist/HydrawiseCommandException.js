@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HydrawiseCommandException = void 0;
 /** Class representing a specifc error triggered by the Hydrawise API binding */
 class HydrawiseCommandException extends Error {
+    date;
     constructor(message, ...params) {
         super(...params);
         Error.captureStackTrace(this, HydrawiseCommandException);

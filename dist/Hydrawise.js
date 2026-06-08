@@ -15,6 +15,12 @@ const HydrawiseCommandException_1 = require("./HydrawiseCommandException");
 const axios_1 = __importDefault(require("axios"));
 /** Class representing a Hydrawise local or cloud based API binding */
 class Hydrawise {
+    cloudUrl = 'https://app.hydrawise.com/api/v1/';
+    type;
+    url;
+    localAuthUsername;
+    localAuthPassword;
+    cloudAuthAPIkey;
     /**
      * Create a new instance of the Hydrawise API binding
      * @param {object} options - Options object containing all parameters
@@ -25,7 +31,6 @@ class Hydrawise {
      * @param {string} [options.key] - The API key of your Hydrawise cloud account. Only needed for cloud bindings.
      */
     constructor(options) {
-        this.cloudUrl = 'https://app.hydrawise.com/api/v1/';
         this.type = options.type || HydrawiseConnectionType_1.HydrawiseConnectionType.CLOUD; // CLOUD or LOCAL 
         this.url = (this.type == HydrawiseConnectionType_1.HydrawiseConnectionType.LOCAL ? 'http://' + options.host + '/' : this.cloudUrl);
         // Local Auth

@@ -6,6 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HydrawiseController = void 0;
 /** Class representing a Hydrawise controller */
 class HydrawiseController {
+    apiBinding;
+    id;
+    name;
+    serialNumber;
+    lastContactWithCloud;
+    status;
     /**
      * Create a new instance of a HydrawiseController
      * @param {object} options - Options object containing all parameters

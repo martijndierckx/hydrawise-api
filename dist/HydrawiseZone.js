@@ -6,6 +6,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HydrawiseZone = void 0;
 /** Class representing a Hydrawise zone */
 class HydrawiseZone {
+    apiBinding;
+    relayID;
+    zone;
+    name;
+    nextRunAt;
+    nextRunDuration;
+    isSuspended;
+    isRunning;
+    remainingRunningTime;
+    controller;
     /**
      * Create a new instance of a HydrawiseZone
      * @param {object} options - Options object containing all parameters
