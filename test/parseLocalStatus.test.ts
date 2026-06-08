@@ -1,21 +1,14 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
 import { Hydrawise, HydrawiseConnectionType } from '../src';
+import { setupFetchMock, restoreFetchMock } from './helpers/fetchMock';
 import localFixture from './fixtures/local-get-sched.json';
 import localRunningFixture from './fixtures/local-get-sched-with-running.json';
 
-describe('LOCAL getZones() — characterization', () => {
-  let mock: MockAdapter;
-  beforeEach(() => {
-    mock = new MockAdapter(axios);
-  });
-  afterEach(() => {
-    mock.restore();
-  });
+describe('LOCAL getZones()', () => {
+  afterEach(() => restoreFetchMock());
 
   it('excludes relays with lastwaterepoch == 0', async () => {
-    mock.onGet().reply(200, localFixture);
+    setupFetchMock(localFixture);
     const h = new Hydrawise({ type: HydrawiseConnectionType.LOCAL, host: 'h', password: 'p' });
     const zones = await h.getZones();
     expect(zones).toHaveLength(2);
@@ -23,7 +16,7 @@ describe('LOCAL getZones() — characterization', () => {
   });
 
   it('maps relay_id → relayID and relay → zone', async () => {
-    mock.onGet().reply(200, localFixture);
+    setupFetchMock(localFixture);
     const h = new Hydrawise({ type: HydrawiseConnectionType.LOCAL, host: 'h', password: 'p' });
     const [front] = await h.getZones();
     expect(front.relayID).toBe(1001);
@@ -31,23 +24,21 @@ describe('LOCAL getZones() — characterization', () => {
   });
 
   it('computes nextRunAt from (data.time + z.time) * 1000', async () => {
-    mock.onGet().reply(200, localFixture);
+    setupFetchMock(localFixture);
     const h = new Hydrawise({ type: HydrawiseConnectionType.LOCAL, host: 'h', password: 'p' });
     const [front] = await h.getZones();
     expect(front.nextRunAt.getTime()).toBe((1700000000 + 3600) * 1000);
   });
 
-  // Note: in v1.2.1, `defaultRunDuration` is set on the temp object in Hydrawise.ts
-  // but never copied by the HydrawiseZone constructor. Phase D will wire it through properly.
-  it('v1 leaks: defaultRunDuration is silently dropped by HydrawiseZone constructor (pre-existing bug)', async () => {
-    mock.onGet().reply(200, localFixture);
+  it('v2: defaultRunDuration = normalRuntime * 60 (now wired through ctor)', async () => {
+    setupFetchMock(localFixture);
     const h = new Hydrawise({ type: HydrawiseConnectionType.LOCAL, host: 'h', password: 'p' });
     const [front] = await h.getZones();
-    expect((front as any).defaultRunDuration).toBeUndefined();
+    expect(front.defaultRunDuration).toBe(600);
   });
 
   it('isRunning=false when data.running is empty', async () => {
-    mock.onGet().reply(200, localFixture);
+    setupFetchMock(localFixture);
     const h = new Hydrawise({ type: HydrawiseConnectionType.LOCAL, host: 'h', password: 'p' });
     const [front] = await h.getZones();
     expect(front.isRunning).toBe(false);
@@ -55,7 +46,7 @@ describe('LOCAL getZones() — characterization', () => {
   });
 
   it('isRunning=true and remainingRunningTime=time_left when relay is in data.running', async () => {
-    mock.onGet().reply(200, localRunningFixture);
+    setupFetchMock(localRunningFixture);
     const h = new Hydrawise({ type: HydrawiseConnectionType.LOCAL, host: 'h', password: 'p' });
     const zones = await h.getZones();
     const front = zones.find((z) => z.relayID === 1001)!;

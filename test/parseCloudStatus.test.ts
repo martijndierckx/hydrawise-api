@@ -1,28 +1,21 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+import { describe, it, expect, afterEach } from 'vitest';
 import { Hydrawise, HydrawiseConnectionType, HydrawiseController } from '../src';
+import { setupFetchMock, restoreFetchMock } from './helpers/fetchMock';
 import cloudFixture from './fixtures/cloud-statusschedule.json';
 import cloudRunningFixture from './fixtures/cloud-statusschedule-running.json';
 
-describe('CLOUD getZones() — characterization', () => {
-  let mock: MockAdapter;
-  beforeEach(() => {
-    mock = new MockAdapter(axios);
-  });
-  afterEach(() => {
-    mock.restore();
-  });
+describe('CLOUD getZones()', () => {
+  afterEach(() => restoreFetchMock());
 
   it('returns all zones regardless of lastwaterepoch', async () => {
-    mock.onGet().reply(200, cloudFixture);
+    setupFetchMock(cloudFixture);
     const h = new Hydrawise({ type: HydrawiseConnectionType.CLOUD, key: 'k' });
     const zones = await h.getZones();
     expect(zones).toHaveLength(2);
   });
 
   it('maps relay_id → relayID, relay → zone, name → name', async () => {
-    mock.onGet().reply(200, cloudFixture);
+    setupFetchMock(cloudFixture);
     const h = new Hydrawise({ type: HydrawiseConnectionType.CLOUD, key: 'k' });
     const [z1] = await h.getZones();
     expect(z1.relayID).toBe(2001);
@@ -31,7 +24,7 @@ describe('CLOUD getZones() — characterization', () => {
   });
 
   it('isRunning=true when z.time === 1 with remainingRunningTime = z.run', async () => {
-    mock.onGet().reply(200, cloudRunningFixture);
+    setupFetchMock(cloudRunningFixture);
     const h = new Hydrawise({ type: HydrawiseConnectionType.CLOUD, key: 'k' });
     const zones = await h.getZones();
     const z1 = zones.find((z) => z.relayID === 2001)!;
@@ -42,9 +35,9 @@ describe('CLOUD getZones() — characterization', () => {
   });
 
   it('links provided HydrawiseController to every zone', async () => {
-    mock.onGet().reply(200, cloudFixture);
+    setupFetchMock(cloudFixture);
     const h = new Hydrawise({ type: HydrawiseConnectionType.CLOUD, key: 'k' });
-    const controller = new HydrawiseController({ apiBinding: h, id: 5001, name: 'C' } as any);
+    const controller = new HydrawiseController({ apiBinding: h, id: 5001, name: 'C' });
     const zones = await h.getZones(controller);
     for (const z of zones) {
       expect(z.controller).toBe(controller);
@@ -52,7 +45,7 @@ describe('CLOUD getZones() — characterization', () => {
   });
 
   it('does not set defaultRunDuration on cloud zones', async () => {
-    mock.onGet().reply(200, cloudFixture);
+    setupFetchMock(cloudFixture);
     const h = new Hydrawise({ type: HydrawiseConnectionType.CLOUD, key: 'k' });
     const [z1] = await h.getZones();
     expect(z1.defaultRunDuration).toBeUndefined();

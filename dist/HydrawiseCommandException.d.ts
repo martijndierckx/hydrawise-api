@@ -1,9 +1,6 @@
-/**
- * @author Martijn Dierckx
- */
-/** Class representing a specifc error triggered by the Hydrawise API binding */
+/** Specific error thrown by the Hydrawise API binding when the server replies with messageType === 'error'. */
 export declare class HydrawiseCommandException extends Error {
-    date: Date;
-    constructor(message: string, ...params: any);
+    readonly date: Date;
+    constructor(message: string);
 }
 //# sourceMappingURL=HydrawiseCommandException.d.ts.map

@@ -1,1 +1,1 @@
-{"version":3,"file":"HydrawiseCommandException.d.ts","sourceRoot":"","sources":["../src/HydrawiseCommandException.ts"],"names":[],"mappings":"AAAA;;GAEG;AAEH,gFAAgF;AAChF,qBAAa,yBAA0B,SAAQ,KAAK;IAE5C,IAAI,EAAE,IAAI,CAAC;gBAEN,OAAO,EAAE,MAAM,EAAE,GAAG,MAAM,EAAC,GAAG;CAS1C"}
+{"version":3,"file":"HydrawiseCommandException.d.ts","sourceRoot":"","sources":["../src/HydrawiseCommandException.ts"],"names":[],"mappings":"AAAA,+GAA+G;AAC/G,qBAAa,yBAA0B,SAAQ,KAAK;IAClD,SAAgB,IAAI,EAAE,IAAI,CAAC;gBAEf,OAAO,EAAE,MAAM;CAM5B"}

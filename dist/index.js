@@ -14,9 +14,13 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createHttpClient = void 0;
 __exportStar(require("./Hydrawise"), exports);
 __exportStar(require("./HydrawiseZone"), exports);
 __exportStar(require("./HydrawiseController"), exports);
 __exportStar(require("./HydrawiseConnectionType"), exports);
 __exportStar(require("./HydrawiseCommandException"), exports);
+__exportStar(require("./types"), exports);
+var http_1 = require("./http");
+Object.defineProperty(exports, "createHttpClient", { enumerable: true, get: function () { return http_1.createHttpClient; } });
 //# sourceMappingURL=index.js.map

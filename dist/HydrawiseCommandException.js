@@ -1,18 +1,14 @@
 "use strict";
-/**
- * @author Martijn Dierckx
- */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HydrawiseCommandException = void 0;
-/** Class representing a specifc error triggered by the Hydrawise API binding */
+/** Specific error thrown by the Hydrawise API binding when the server replies with messageType === 'error'. */
 class HydrawiseCommandException extends Error {
     date;
-    constructor(message, ...params) {
-        super(...params);
-        Error.captureStackTrace(this, HydrawiseCommandException);
+    constructor(message) {
+        super(message);
         this.name = 'HydrawiseCommandException';
-        this.message = message;
         this.date = new Date();
+        Error.captureStackTrace?.(this, HydrawiseCommandException);
     }
 }
 exports.HydrawiseCommandException = HydrawiseCommandException;

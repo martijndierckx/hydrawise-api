@@ -1,135 +1,182 @@
 # Hydrawise API
 
-[![Build Status](https://travis-ci.org/paulmolluzzo/hydrawise-api.svg?branch=master)](https://travis-ci.org/paulmolluzzo/hydrawise-api)
+A TypeScript client for the [Hydrawise API](https://support.hydrawise.com/hc/en-us/articles/360008965753-Hydrawise-API-Information) — both cloud-based and direct local-network bindings. [Hydrawise](https://hydrawise.com) is an internet-controlled home irrigation system.
 
-This is a client for the [Hydrawise API](https://support.hydrawise.com/hc/en-us/articles/360008965753-Hydrawise-API-Information). [Hydrawise](https://hydrawise.com) is an internet-controlled home irrigation system.
+Zero runtime dependencies (uses native `fetch`).
 
-On a very basic level, it allows you to do:
-* [Get controllers](#get-controllers)
-* [Get zones](#get-zones)
-* [Run a command on a zone](#run-a-command-on-a-zone) (run/stop/suspend)
-* [Command all zones at once](#command-all-zones-at-once)
+What you can do:
 
-For all possibilities, have a look at the inline code documentation
+- [Get controllers](#get-controllers)
+- [Get zones](#get-zones)
+- [Run a command on a zone](#run-a-command-on-a-zone) (run / stop / suspend)
+- [Command all zones at once](#command-all-zones-at-once)
 
 ## Getting started
 
-When possible use a local connection to your controller since it's not rate limited (HTTP error 429) and suffers no delays when trying to run commands on zones.
-Local connections are only possible on firmware versions below v3.0.0 however.
+When possible use a local connection to your controller: it isn't rate limited (no HTTP 429s) and suffers no delays for zone commands. Local connections require controller firmware below v3.0.0.
 
-### Setup for a cloud connection
+### Setup — cloud
 
-```js
-const Hydrawise = require('hydrawise-api').Hydrawise;
-const myHydrawise = new Hydrawise({ type:'CLOUD', key:'YOUR_API_KEY' });
+```ts
+import { Hydrawise } from 'hydrawise-api';
+
+const hydrawise = new Hydrawise({ type: 'CLOUD', key: 'YOUR_API_KEY' });
 ```
 
-You can obtain your API key from the "Account Details" screen on the [Hydrawise platform](https://app.hydrawise.com/config/account/details)
+Get your API key from "Account Details" on the [Hydrawise platform](https://app.hydrawise.com/config/account/details).
 
-### Setup for a local connection
+### Setup — local
 
-```js
-const Hydrawise = require('hydrawise-api').Hydrawise;
-const myHydrawise = new Hydrawise({ type:'LOCAL', host:'HOSTNAME_OR_IP_ADDRESS', password:'YOUR_CONTROLLER_PASSWORD' });
+```ts
+import { Hydrawise } from 'hydrawise-api';
+
+const hydrawise = new Hydrawise({
+  type: 'LOCAL',
+  host: 'HOSTNAME_OR_IP_ADDRESS',
+  password: 'YOUR_CONTROLLER_PASSWORD'
+  // user: 'admin'   // optional, defaults to admin
+});
 ```
-
-You can also provide a *user* parameter, but this should be 'admin' in most cases.
 
 ## Basic usage
 
-### Get Controllers
+### Get controllers
 
-If you have multiple controllers you can use this function to retrieve them all. Once you know your controllers, you're able to get and/or command the connected zones to that controller.
+If you have multiple controllers, fetch them first and then operate on the one you need.
 
-```js
-myHydrawise.getControllers()
-  .then(controllers => console.log(controllers))
-  .catch(error => console.log(error));
+```ts
+const controllers = await hydrawise.getControllers();
 ```
 
-### Get Zones
+### Get zones
 
-Get all zones and see their status.
+If you have a single controller you can skip the controllers fetch:
 
-If you only have a single controller, you can get the list of zones without first retrieving your controller details:
-
-```js
-myHydrawise.getZones()
-  .then(zones => console.log(zones))
-  .catch(error => console.log(error));
+```ts
+const zones = await hydrawise.getZones();
 ```
 
-If you have multiple controllers you should first get your list of controllers and request the zones list for that specific controller (if you don't you only get the zones of your 'default' controller.):
+For multi-controller setups, fetch zones from a specific controller:
 
-```js
-myHydrawise.getControllers()
-  .then((controllers) => {
-    // Get the zones for the first returned controller
-    controllers[0].getZones()
-    .then(zones => console.log(zones))
-    .catch(error => console.log(error));
-  })
-  .catch(error => console.log(error));
+```ts
+const controllers = await hydrawise.getControllers();
+const zones = await controllers[0].getZones();
 ```
 
-This will return an array of HydrawiseZone objects containing the following info:
+Each `HydrawiseZone` carries:
 
-```js
-{number} relayID - The unique relay number known to the Hydrawise cloud
-{number} zone - The local zone/relay number
-{string} name - The name of the zone
-{Date} nextRunAt - The date & time of the next scheduled run 
-{number} nextRunDuration - Run time in seconds of the next run defined by nextRunAt
-{boolean} isSuspended - Returns true when the zoneis currently suspended
-{boolean} isRunning - Returns true when the zone is actively running
-{number} remainingRunningTime - Remaining run time in seconds when isRunning = true
-```
+| Field | Type | Notes |
+|---|---|---|
+| `relayID` | `number` | Unique relay ID known to the Hydrawise cloud. |
+| `zone` | `number` | Local zone/relay number on the controller. |
+| `name` | `string` | Zone display name. |
+| `nextRunAt` | `Date` | Next scheduled run. |
+| `nextRunDuration` | `number` | Run time (seconds) for the next scheduled run. |
+| `isSuspended` | `boolean` | True when the zone is currently suspended. |
+| `isRunning` | `boolean` | True when the zone is actively running. |
+| `remainingRunningTime` | `number` | Seconds remaining when `isRunning`. |
+| `controller` | `HydrawiseController \| undefined` | Set when the zone was fetched via a specific controller. |
+| `defaultRunDuration` | `number \| undefined` | LOCAL only: the controller's configured default run time, in seconds. |
 
 ### Run a command on a zone
 
-You can execute a couple of basic commands on each zone: `run()`, `suspend()` or `stop()`
+Use `run()`, `suspend()`, or `stop()` on a `HydrawiseZone`:
 
-```js
-myHydrawise.getZones()
-  .then(zones => {
-    // Run the first returned zone  
-    zone[0].run().then((info) => {
-      console.log('success');
-    }).catch(error => console.log(error));
-  }).catch(error => console.log(error));
+```ts
+const zones = await hydrawise.getZones();
+await zones[0].run();        // default duration
+await zones[0].run(600);     // 10 minutes
+await zones[0].suspend(300); // suspend 5 minutes
+await zones[0].stop();
 ```
 
-For the run & suspend commands you are able to provide a custom duration in seconds: `run(600)` (for 10 mins).
-If no custom duration was provided, the default run time configured for the zone will be used. 
+Or command directly via the binding:
 
-Zones can also be commanded directly from the Hydrawise object:
-
-```js
-myHydrawise.runZone(1) - Run by local zone number (only. for local bindings)
-myHydrawise.runZone(123123) - Run by unique relay ID (only. for cloud bindings)
-myHydrawise.runZone(myHydrawiseZoneObject) - Run by the HydrawiseZone object returned by getZones()
+```ts
+await hydrawise.runZone(1);              // by local zone number (LOCAL)
+await hydrawise.runZone(2001);           // by relay_id (CLOUD)
+await hydrawise.runZone(zone);           // by HydrawiseZone object
 ```
+
+For type safety, prefer the `ZoneAction` enum when calling the low-level commands:
+
+```ts
+import { ZoneAction } from 'hydrawise-api';
+await hydrawise.commandZone(ZoneAction.Run, 1, 600);
+```
+
+Legacy string actions (`'run'`, `'stop'`, `'suspend'`) are still accepted.
 
 ### Command all zones at once
 
-It's also possible to command all zones at the same time:
-
-```js
-myHydrawise.runAllZones()
-  .then(info => {
-     console.log('success');
-  }).catch(error => console.log(error));
+```ts
+await hydrawise.runAllZones();           // all zones, default duration
+await hydrawise.runAllZones(600);        // all zones for 10 minutes
+await hydrawise.stopAllZones();
+await hydrawise.suspendAllZones(controllers[0], 300);
 ```
 
-Here as well, you are able to provide a custom duration: `runAllZones(600)` (for 10 mins).
+## Migration from v1
 
-------
+v2 is a breaking release. The migration is mechanical and the public API surface is otherwise stable.
+
+**1. Constructor now throws on missing required fields.**
+
+```ts
+// v1: silently created a broken instance
+new Hydrawise({ type: 'CLOUD' });
+
+// v2: throws
+new Hydrawise({ type: 'CLOUD' });  // Error: CLOUD Hydrawise binding requires `key`
+```
+
+This is a latent-bug-finder, not a behavior change for callers that already passed the right fields.
+
+**2. Discriminated-union config type.**
+
+The `HydrawiseConfiguration` interface is **removed** and replaced by `HydrawiseConfig`:
+
+```ts
+type HydrawiseConfig =
+  | { type: 'LOCAL'; host: string; password: string; user?: string }
+  | { type: 'CLOUD'; key: string };
+```
+
+If you typed your config object with `HydrawiseConfiguration`, switch to `HydrawiseConfig`. The runtime constructor still accepts a loose object (so plain object literals continue to work).
+
+**3. `commandZone` and `commandAllZones` action parameter is now typed.**
+
+Both an exported `ZoneAction` enum and legacy string literals are accepted. The single-zone command (`commandZone`) only accepts single-zone actions (`Run`/`Stop`/`Suspend`); passing an `…All` action is now a compile error.
+
+```ts
+import { ZoneAction } from 'hydrawise-api';
+await hydrawise.commandZone(ZoneAction.Run, 1, 600);   // preferred
+await hydrawise.commandZone('run', 1, 600);            // still works
+```
+
+**4. `HydrawiseController.id` / `serialNumber` typed as optional.**
+
+LOCAL controllers never had these values; v1 falsely typed them as required. Code that reads them on LOCAL controllers must now handle `undefined`.
+
+**5. New `HydrawiseController.host` field (LOCAL only).**
+
+Carries the raw configured host (e.g. `192.168.1.10`). Consumers (like `homebridge-hydrawise`) use this to derive a stable identifier for LOCAL controllers.
+
+**6. `HydrawiseZone.controller` typed as optional.**
+
+Matches the v1 runtime behavior: only set when zones were fetched via a specific controller.
+
+**7. `defaultRunDuration` is now actually populated (LOCAL only).**
+
+In v1, the field was advertised but the `HydrawiseZone` constructor silently dropped it. v2 wires it through.
+
+**8. Zero runtime dependencies.**
+
+Axios is gone — v2 uses native `fetch`. Minimum runtime: Node 18.20.
 
 ## Contributors
 
-* Martijn Dierckx - Complete rewrite to service both the cloud & local API binding in TypeScript
-* [Paul Molluzzo](https://paul.molluzzo.com) - Initial 0.1.0 version containing the cloud binding
+- Martijn Dierckx — TypeScript rewrite + v2 modernization.
+- [Paul Molluzzo](https://paul.molluzzo.com) — initial 0.1.0 (cloud binding).
 
-Tested on a configuration with a single HC6 controller. If you have multiple controllers in your configuration and you run into problems, you're free to create an issue or contribute yourself :-)
-
-MIT license
+MIT license.
