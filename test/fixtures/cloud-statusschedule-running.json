@@ -1,0 +1,23 @@
+{
+  "time": 1700000000,
+  "message": "",
+  "messageType": "info",
+  "relays": [
+    {
+      "relay_id": 2001,
+      "relay": 1,
+      "name": "Cloud Zone 1",
+      "time": 1,
+      "run": 540,
+      "suspended": 0
+    },
+    {
+      "relay_id": 2002,
+      "relay": 2,
+      "name": "Cloud Zone 2",
+      "time": 7200,
+      "run": 600,
+      "suspended": 0
+    }
+  ]
+}

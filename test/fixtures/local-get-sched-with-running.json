@@ -1,0 +1,36 @@
+{
+  "time": 1700000000,
+  "message": "",
+  "messageType": "info",
+  "nextpoll": 60,
+  "running": [
+    {
+      "relay_id": 1001,
+      "time_left": 420
+    }
+  ],
+  "relays": [
+    {
+      "relay_id": 1001,
+      "relay": 1,
+      "name": "Front Lawn",
+      "time": 3600,
+      "run_seconds": 600,
+      "run": 600,
+      "suspended": 0,
+      "normalRuntime": 10,
+      "lastwaterepoch": 1699900000
+    },
+    {
+      "relay_id": 1002,
+      "relay": 2,
+      "name": "Back Lawn",
+      "time": 7200,
+      "run_seconds": 900,
+      "run": 900,
+      "suspended": 0,
+      "normalRuntime": 15,
+      "lastwaterepoch": 1699900000
+    }
+  ]
+}

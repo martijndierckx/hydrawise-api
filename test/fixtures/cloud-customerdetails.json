@@ -1,0 +1,19 @@
+{
+  "customer_id": 9999,
+  "controllers": [
+    {
+      "controller_id": 5001,
+      "name": "Garden HC6",
+      "serial_number": "ABC123XYZ",
+      "last_contact": 1700000000,
+      "status": "All good!"
+    },
+    {
+      "controller_id": 5002,
+      "name": "Greenhouse",
+      "serial_number": "DEF456UVW",
+      "last_contact": 1700000005,
+      "status": "All good!"
+    }
+  ]
+}
