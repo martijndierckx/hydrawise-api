@@ -9,17 +9,19 @@
       "relay_id": 1001,
       "relay": 1,
       "name": "Front Lawn",
+      "type": 9,
       "time": 3600,
       "run_seconds": 600,
       "run": 600,
       "suspended": 0,
       "normalRuntime": 10,
-      "lastwaterepoch": 1699900000
+      "lastwaterepoch": 0
     },
     {
       "relay_id": 1002,
       "relay": 2,
       "name": "Back Lawn",
+      "type": 9,
       "time": 7200,
       "run_seconds": 900,
       "run": 900,
@@ -30,7 +32,8 @@
     {
       "relay_id": 1003,
       "relay": 3,
-      "name": "Unconfigured Zone",
+      "name": "Zone 3",
+      "type": 110,
       "time": 0,
       "run_seconds": 0,
       "run": 0,

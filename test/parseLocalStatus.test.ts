@@ -7,12 +7,22 @@ import localRunningFixture from './fixtures/local-get-sched-with-running.json';
 describe('LOCAL getZones()', () => {
   afterEach(() => restoreFetchMock());
 
-  it('excludes relays with lastwaterepoch == 0', async () => {
+  it('excludes relays with type == 110 (unconfigured slots)', async () => {
     setupFetchMock(localFixture);
     const h = new Hydrawise({ type: HydrawiseConnectionType.LOCAL, host: 'h', password: 'p' });
     const zones = await h.getZones();
     expect(zones).toHaveLength(2);
     expect(zones.map((z) => z.name)).toEqual(['Front Lawn', 'Back Lawn']);
+  });
+
+  it('regression: includes configured relays whose lastwaterepoch is 0 (never watered)', async () => {
+    // Front Lawn in the fixture has type=9, lastwaterepoch=0 — must be included.
+    // Pre-fix behavior dropped it via the unsafe lastwaterepoch === 0 heuristic.
+    setupFetchMock(localFixture);
+    const h = new Hydrawise({ type: HydrawiseConnectionType.LOCAL, host: 'h', password: 'p' });
+    const zones = await h.getZones();
+    const front = zones.find((z) => z.name === 'Front Lawn');
+    expect(front).toBeDefined();
   });
 
   it('maps relay_id → relayID and relay → zone', async () => {

@@ -1,6 +1,16 @@
 # Changelog
 
-## 2.0.0 (unreleased)
+## 2.0.1
+
+### Fixed
+
+- **LOCAL zone filter**: real configured zones with `lastwaterepoch === 0` (never watered) were being silently dropped, returning an empty zone list to consumers. Reverted to the original (pre-2020) heuristic of skipping relays with `type === 110`, which is the controller's own marker for unconfigured slots. Regression introduced in commit `eb0fe93` (May 2020); preserved across the v2 rewrite. Fixes `homebridge-hydrawise` showing zero accessories after a controller reset.
+
+### Added
+
+- `RelayRow.type?: number` field on the typed LOCAL response.
+
+## 2.0.0
 
 ### Breaking
 

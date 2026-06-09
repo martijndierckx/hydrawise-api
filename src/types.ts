@@ -24,6 +24,8 @@ export interface RelayRow {
   suspended?: 0 | 1;
   normalRuntime?: number;
   lastwaterepoch?: number;
+  /** LOCAL-only: relay slot type. `110` indicates an unconfigured/empty slot. */
+  type?: number;
 }
 
 export interface RunningRow {
