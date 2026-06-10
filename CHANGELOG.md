@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.2
+
+### Changed
+
+- **LOCAL zone filter removed**: the `type === 110` heuristic (re-added in 2.0.1) is no longer applied. All relay slots returned by the controller are now surfaced to callers without filtering. The `type: 110` value turns out to conflate genuinely-empty/unconfigured relay slots with real valves that simply have no watering schedule assigned — so the library cannot reliably distinguish them. Consumers (e.g. `homebridge-hydrawise`) are now responsible for deciding which relays to hide, typically via an explicit exclude-list in their own config.
+
 ## 2.0.1
 
 ### Fixed
