@@ -212,13 +212,6 @@ export class Hydrawise {
     const running: RunningRow[] = (data as LocalStatusResponse).running ?? [];
 
     for (const z of data.relays) {
-      // LOCAL responses include all relay slots; unconfigured ones are tagged `type: 110`.
-      // The pre-2020 filter (`type != 110`) was correct; it was replaced with a
-      // `lastwaterepoch !== 0` check that dropped real zones that had never run.
-      // CLOUD responses are pre-filtered to configured zones only — no filter needed.
-      if (this.type === HydrawiseConnectionType.LOCAL && z.type === 110) {
-        continue;
-      }
       const init = this.zoneFromRow(z, data.time, running, controller);
       zones.push(new HydrawiseZone(init));
     }

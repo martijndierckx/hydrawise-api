@@ -7,12 +7,12 @@ import localRunningFixture from './fixtures/local-get-sched-with-running.json';
 describe('LOCAL getZones()', () => {
   afterEach(() => restoreFetchMock());
 
-  it('excludes relays with type == 110 (unconfigured slots)', async () => {
+  it('includes relays with type == 110 (unscheduled / empty slots now surfaced)', async () => {
     setupFetchMock(localFixture);
     const h = new Hydrawise({ type: HydrawiseConnectionType.LOCAL, host: 'h', password: 'p' });
     const zones = await h.getZones();
-    expect(zones).toHaveLength(2);
-    expect(zones.map((z) => z.name)).toEqual(['Front Lawn', 'Back Lawn']);
+    expect(zones).toHaveLength(3);
+    expect(zones.map((z) => z.name)).toEqual(['Front Lawn', 'Back Lawn', 'Zone 3']);
   });
 
   it('regression: includes configured relays whose lastwaterepoch is 0 (never watered)', async () => {
